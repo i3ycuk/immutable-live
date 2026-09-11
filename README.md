@@ -1,21 +1,22 @@
+[Русский](README.ru.md)
 # immutable-live
- 
-**immutable-live** защищает persistence-раздел Live-систем (Linux Live USB/ISO с сохранением данных между перезагрузками) от повреждения или потери данных при смене ISO-образа или дистрибутива.
- 
-## Проблема
- 
-Обычно persistence-раздел на Live USB жёстко привязан к конкретному ISO-образу: его структура, UUID, формат или ожидаемые пути завязаны на конкретную сборку дистрибутива. Как только вы:
- 
-- обновляете ISO на новую версию,
-- меняете дистрибутив на другом Live USB,
-- пересобираете образ,
-раздел с вашими данными либо перестаёт монтироваться, либо теряется целиком.
- 
-## Решение
- 
-immutable-live отвязывает persistence-раздел от конкретного ISO/дистрибутива, делая его переносимым и устойчивым к таким изменениям — данные остаются доступны независимо от того, какой Live-образ загружен поверх.
 
+**immutable-live** protects the persistence partition of Live Linux systems (Live USB/ISO with data preserved across reboots) from corruption or data loss when the ISO image or distro changes.
 
-## Лицензия
- 
-Проект распространяется под лицензией [MIT](LICENSE).
+## Problem
+
+Normally, the persistence partition on a Live USB is tightly bound to a specific ISO image: its structure, UUID, format, or expected paths are tied to a particular distro build. As soon as you:
+
+- update the ISO to a new version,
+- switch to a different distro on the same Live USB,
+- rebuild the image,
+
+the partition with your data either stops mounting or is lost entirely.
+
+## Solution
+
+immutable-live decouples the persistence partition from any specific ISO/distro, making it portable and resilient to such changes — your data stays accessible regardless of which Live image is booted on top of it.
+
+## License
+
+This project is distributed under the [MIT](LICENSE) license.
