@@ -1,0 +1,14 @@
+[Unit]
+Description=Immutable Live System Service (ISO Auto-Cleanup, Package & User Management)
+After=local-fs.target
+Before=display-manager.service getty@tty1.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/immutable-live.sh
+ExecStop=/usr/local/bin/immutable-live.sh --save-packages
+RemainAfterExit=yes
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
