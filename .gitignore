@@ -21,3 +21,4 @@ tools/VM/persistence-mount
 .git
 .github
 .bugs
+.nfs*

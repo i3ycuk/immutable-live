@@ -6,7 +6,7 @@ PROJECT_DIR=$(cd -- "${SCRIPT_DIR}/../.." && pwd)
 ISO_ROOT=${ISO_ROOT:-"${PROJECT_DIR}/disk/boot/iso"}
 PERSISTENCE_DIR=${PERSISTENCE_DIR:-"${PROJECT_DIR}/disk/persistence"}
 VM_NAME=${VM_NAME:-immutable-live}
-MEMORY=${MEMORY:-2G}
+MEMORY=${MEMORY:-4G}
 VM_STATE_DIR=${VM_STATE_DIR:-"${SCRIPT_DIR}"}
 PERSISTENCE_LABEL=persistence
 
@@ -14,17 +14,17 @@ clear
 
 usage() {
 	cat <<'EOF'
-Запуск immutable-live в QEMU.
+Run immutable-live in QEMU.
 
-Использование:
+Usage:
   run-vm.sh [--dry-run]
 
-Переменные окружения:
-  ISO_ROOT          каталог с подкаталогами amd64/arm64
-	PERSISTENCE_DIR   исходная папка для ext4-раздела persistence
-	VM_STATE_DIR      место образов ВМ (по умолчанию: рядом со скриптом)
-	PERSISTENCE_MOUNT_DIR  read-only mountpoint на хосте
-  MEMORY            объём памяти QEMU (по умолчанию: 2G)
+Environment variables:
+  ISO_ROOT          directory with amd64/arm64 subdirectories
+  PERSISTENCE_DIR   source folder for the persistence ext4 partition
+  VM_STATE_DIR      VM image location (default: next to this script)
+  PERSISTENCE_MOUNT_DIR  read-only mountpoint on the host
+  MEMORY            QEMU memory (default: 4G)
 EOF
 }
 
@@ -33,7 +33,7 @@ case ${1:-} in
 	'') ;;
 	--dry-run) DRY_RUN=true ;;
 	-h|--help) usage; exit 0 ;;
-	*) echo "Неизвестный параметр: $1" >&2; usage >&2; exit 2 ;;
+	*) echo "Unknown argument: $1" >&2; usage >&2; exit 2 ;;
 esac
 
 case $(uname -m) in
@@ -48,24 +48,24 @@ case $(uname -m) in
 		MACHINE=virt
 		;;
 	*)
-		echo "Неподдерживаемая архитектура процессора: $(uname -m)" >&2
+		echo "Unsupported CPU architecture: $(uname -m)" >&2
 		exit 1
 		;;
 esac
 
 ISO_DIR=${ISO_ROOT}/${ARCH}
-[[ -d ${ISO_DIR} ]] || { echo "Каталог ISO не найден: ${ISO_DIR}" >&2; exit 1; }
-[[ -d ${PERSISTENCE_DIR} ]] || { echo "Каталог persistence не найден: ${PERSISTENCE_DIR}" >&2; exit 1; }
+[[ -d ${ISO_DIR} ]] || { echo "ISO directory not found: ${ISO_DIR}" >&2; exit 1; }
+[[ -d ${PERSISTENCE_DIR} ]] || { echo "Persistence directory not found: ${PERSISTENCE_DIR}" >&2; exit 1; }
 
 mapfile -d '' ISO_FILES < <(find "${ISO_DIR}" -maxdepth 1 -type f \
 	\( -iname '*.iso' -o -iname '*.img' \) -print0 | sort -z)
-[[ ${#ISO_FILES[@]} -gt 0 ]] || { echo "В ${ISO_DIR} нет ISO/IMG-файлов" >&2; exit 1; }
+[[ ${#ISO_FILES[@]} -gt 0 ]] || { echo "No ISO/IMG files in ${ISO_DIR}" >&2; exit 1; }
 
 PERSISTENCE_BASE=${VM_STATE_DIR}/persistence-base.ext4
 PERSISTENCE_OVERLAY=${VM_STATE_DIR}/persistence-overlay.qcow2
 PERSISTENCE_FINGERPRINT=${VM_STATE_DIR}/persistence.sha256
 PERSISTENCE_MOUNT_DIR=${PERSISTENCE_MOUNT_DIR:-"${VM_STATE_DIR}/persistence-mount"}
-PERSISTENCE_SIZE=${PERSISTENCE_SIZE:-512M}
+PERSISTENCE_SIZE=${PERSISTENCE_SIZE:-1024M}
 
 persistence_fingerprint() {
 	tar -C "${PERSISTENCE_DIR}" --sort=name --mtime='UTC 1970-01-01' \
@@ -90,8 +90,8 @@ for iso in "${ISO_FILES[@]}"; do
 	QEMU_ARGS+=(-drive "file=${iso},media=cdrom,readonly=on")
 done
 
-printf 'Архитектура: %s\nISO: %s\nPersistence base (ext4, label=%s): %s\nPersistence writes: %s\n' \
-	"${ARCH}" "${#ISO_FILES[@]} файл(ов)" "${PERSISTENCE_LABEL}" "${PERSISTENCE_DIR}" "${PERSISTENCE_OVERLAY}"
+printf 'Architecture: %s\nISO: %s\nPersistence base (ext4, label=%s): %s\nPersistence writes: %s\n' \
+	"${ARCH}" "${#ISO_FILES[@]} file(s)" "${PERSISTENCE_LABEL}" "${PERSISTENCE_DIR}" "${PERSISTENCE_OVERLAY}"
 
 if [[ ${DRY_RUN} = true ]]; then
 	printf '%q ' "${QEMU}" "${QEMU_ARGS[@]}"
@@ -99,15 +99,15 @@ if [[ ${DRY_RUN} = true ]]; then
 	exit 0
 fi
 
-command -v mke2fs >/dev/null 2>&1 || { echo "Не найден mke2fs (пакет e2fsprogs)" >&2; exit 1; }
-command -v qemu-img >/dev/null 2>&1 || { echo "Не найден qemu-img (пакет qemu-utils)" >&2; exit 1; }
+command -v mke2fs >/dev/null 2>&1 || { echo "mke2fs not found (package e2fsprogs)" >&2; exit 1; }
+command -v qemu-img >/dev/null 2>&1 || { echo "qemu-img not found (package qemu-utils)" >&2; exit 1; }
 command -v "${QEMU}" >/dev/null 2>&1 || {
-	echo "Не найден ${QEMU}. Установите пакет qemu-system-${ARCH}." >&2
+	echo "${QEMU} not found. Install the qemu-system-${ARCH} package." >&2
 	exit 1
 }
-command -v mount >/dev/null 2>&1 || { echo "Не найден mount (пакет util-linux)" >&2; exit 1; }
-command -v umount >/dev/null 2>&1 || { echo "Не найден umount (пакет util-linux)" >&2; exit 1; }
-command -v mountpoint >/dev/null 2>&1 || { echo "Не найден mountpoint (пакет util-linux)" >&2; exit 1; }
+command -v mount >/dev/null 2>&1 || { echo "mount not found (package util-linux)" >&2; exit 1; }
+command -v umount >/dev/null 2>&1 || { echo "umount not found (package util-linux)" >&2; exit 1; }
+command -v mountpoint >/dev/null 2>&1 || { echo "mountpoint not found (package util-linux)" >&2; exit 1; }
 
 mkdir -p "${VM_STATE_DIR}"
 mkdir -p "${PERSISTENCE_MOUNT_DIR}"

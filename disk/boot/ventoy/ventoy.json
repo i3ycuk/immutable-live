@@ -1,0 +1,15 @@
+{
+    "control": [
+        { "VTOY_DEFAULT_SEARCH_ROOT": "/iso" },
+        { "VTOY_MENU_TIMEOUT": "20" },
+        { "VTOY_FILT_DOT_UNDERSCORE_FILE": "1" },
+        { "VTOY_WIN11_BYPASS_CHECK": "1" },
+        { "VTOY_DEFAULT_KBD_LAYOUT": "Russian" }
+    ],
+    "theme": {
+        "display_mode": "GUI",
+        "ventoy_left": "5%",
+        "ventoy_top": "95%",
+        "ventoy_color": "#eff0f1"
+    }
+}

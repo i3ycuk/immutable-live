@@ -5,8 +5,7 @@ Before=display-manager.service getty@tty1.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/immutable-live.sh
-ExecStop=/usr/local/bin/immutable-live.sh --save-packages
+ExecStart=/usr/local/bin/immutable-live.sh --boot
 RemainAfterExit=yes
 TimeoutStartSec=0
 

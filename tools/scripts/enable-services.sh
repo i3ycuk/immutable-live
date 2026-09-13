@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# enable-services.sh
-# Включает все сервисы immutable-live в systemd БЕЗ загрузки системы.
+# enable-services.sh - enable immutable-live services in systemd WITHOUT
+# booting the system.
 #
-# Использует офлайн-режим systemctl:  systemctl enable --root=<persistence-root>
-# Это создаёт симлинки в <root>/etc/systemd/system/<target>.wants/.
+# Uses systemctl offline mode:  systemctl enable --root=<persistence-root>
+# This creates symlinks in <root>/etc/systemd/system/<target>.wants/.
 #
-# Использование:
-#   ./tools/scripts/enable-services.sh            # корень по умолчанию: disk/persistence
-#   ./tools/scripts/enable-services.sh /path/to/root    # явный корень persistence
+# Usage:
+#   ./tools/scripts/enable-services.sh                 # default root: disk/persistence
+#   ./tools/scripts/enable-services.sh /path/to/root   # explicit persistence root
 # ==============================================================================
 set -Eeuo pipefail
 
 SERVICES=(immutable-live.service)
 
 log() { printf '[enable-services] %s\n' "$*"; }
-fail() { printf '[enable-services] ОШИБКА: %s\n' "$*" >&2; exit 1; }
+fail() { printf '[enable-services] ERROR: %s\n' "$*" >&2; exit 1; }
 
-command -v systemctl >/dev/null 2>&1 || fail 'systemctl не найден в системе'
+command -v systemctl >/dev/null 2>&1 || fail 'systemctl not found'
 
-# --- Определение корня persistence -------------------------------------------
+# --- Determine the persistence root -------------------------------------------
 if [[ $# -ge 1 ]]; then
     ROOT=$1
 else
@@ -31,25 +31,25 @@ ROOT=$(realpath -m "${ROOT}")
 SYSTEMD_DIR="${ROOT}/etc/systemd/system"
 [[ -d "${ROOT}/link/etc/systemd/system" ]] && SYSTEMD_DIR="${ROOT}/link/etc/systemd/system"
 
-[[ -d ${ROOT} ]] || fail "Корень persistence не найден: ${ROOT}"
-[[ -d ${SYSTEMD_DIR} ]] || fail "Нет каталога systemd: ${SYSTEMD_DIR}"
-log "Корень persistence: ${ROOT} (systemd: ${SYSTEMD_DIR})"
+[[ -d ${ROOT} ]] || fail "Persistence root not found: ${ROOT}"
+[[ -d ${SYSTEMD_DIR} ]] || fail "No systemd directory: ${SYSTEMD_DIR}"
+log "Persistence root: ${ROOT} (systemd: ${SYSTEMD_DIR})"
 
-# --- Проверка наличия unit-файлов ---------------------------------------------
+# --- Check unit files -----------------------------------------------------------
 for service in "${SERVICES[@]}"; do
     [[ -f ${SYSTEMD_DIR}/${service} ]] \
-        || fail "Unit-файл не найден: ${SYSTEMD_DIR}/${service}"
+        || fail "Unit file not found: ${SYSTEMD_DIR}/${service}"
 done
 
-# --- Включение сервисов в корне persistence ------------------------------------
-# Используем relative пути для корректной работы внутри persistence root
+# --- Enable services inside the persistence root --------------------------------
+# Relative paths keep the symlinks valid inside the persistence root.
 for service in "${SERVICES[@]}"; do
-    log "Включение: ${service}"
+    log "Enabling: ${service}"
     mkdir -p "${SYSTEMD_DIR}/multi-user.target.wants"
     ln -sfn "../${service}" "${SYSTEMD_DIR}/multi-user.target.wants/${service}"
 done
 
-# --- Итоговое состояние ---------------------------------------------------------
-log "---- Итоговые симлинки (.*.wants) ----"
+# --- Result ----------------------------------------------------------------------
+log "---- Resulting symlinks (.*.wants) ----"
 find "${SYSTEMD_DIR}" -maxdepth 2 -type l -name '*.service' -printf '%p -> %l\n' | sort
-log "Готово. Симлинки созданы офлайн; при следующей загрузке live-системы сервисы запустятся автоматически."
+log "Done. Symlinks created offline; services will start on the next live boot."
