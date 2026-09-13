@@ -1,13 +1,16 @@
 {
     "control": [
         { "VTOY_DEFAULT_SEARCH_ROOT": "/iso" },
-        { "VTOY_MENU_TIMEOUT": "20" },
+        { "VTOY_DEFAULT_IMAGE": "last" },
+        { "VTOY_MENU_TIMEOUT": "1" },
         { "VTOY_FILT_DOT_UNDERSCORE_FILE": "1" },
         { "VTOY_WIN11_BYPASS_CHECK": "1" },
-        { "VTOY_DEFAULT_KBD_LAYOUT": "Russian" }
+        { "VTOY_DEFAULT_KBD_LAYOUT": "English" },
+        { "VTOY_MENU_TIP": "0" },
+        { "VTOY_SECONDARY_BOOT_MODE": "1" }
     ],
     "theme": {
-        "display_mode": "GUI",
+        "display_mode": "CLI",
         "ventoy_left": "5%",
         "ventoy_top": "95%",
         "ventoy_color": "#eff0f1"

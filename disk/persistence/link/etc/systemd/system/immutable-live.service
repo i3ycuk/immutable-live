@@ -1,11 +1,11 @@
 [Unit]
-Description=Immutable Live System Service (ISO Auto-Cleanup, Package & User Management)
+Description=Immutable Live System Service (ISO Auto-Cleanup & User Management)
 After=local-fs.target
 Before=display-manager.service getty@tty1.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/immutable-live.sh --boot
+ExecStart=/usr/local/bin/immutable-live.sh
 RemainAfterExit=yes
 TimeoutStartSec=0
 

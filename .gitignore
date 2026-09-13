@@ -7,13 +7,15 @@ desktop.packages
 *~
 *.iso
 backups/
-VTOYEFI
+VTOYEFI/
 *.ext4
 *.qcow2
 *.sha256
 persistence-mount
 *.img
-disk/boot/iso/
+disk/boot/iso/amd64
+disk/boot/iso/arm64
+disk/boot/ventoy
 tools/VM/*.ext4
 tools/VM/*.qcow2
 tools/VM/*.sha256
@@ -22,3 +24,4 @@ tools/VM/persistence-mount
 .github
 .bugs
 .nfs*
+tools/ventoy
