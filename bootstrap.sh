@@ -51,6 +51,11 @@ if ! command -v sudo >/dev/null 2>&1; then
     exit 1
 fi
 
+if [[ ! -r /dev/tty || ! -w /dev/tty ]]; then
+    echo "Error: An interactive terminal is required. Run this command from a terminal session."
+    exit 1
+fi
+
 if ! command -v parted >/dev/null 2>&1 && ! command -v sfdisk >/dev/null 2>&1 && ! command -v fdisk >/dev/null 2>&1; then
     echo "Error: parted, sfdisk, or fdisk is required to create the persistence partition."
     exit 1
@@ -60,9 +65,9 @@ WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/immutable-live-bootstrap.XXXXXXXX")
 REPO_DIR="${WORK_DIR}/source"
 
 echo "Downloading a fresh copy of immutable-live into temporary storage..."
-git clone --depth 1 "$REPO_URL" "$REPO_DIR"
+git clone --depth 1 "$REPO_URL" "$REPO_DIR" </dev/null
 
 echo "Starting installer from temporary storage..."
-sudo bash "${REPO_DIR}/install.sh"
+sudo bash "${REPO_DIR}/install.sh" </dev/tty
 
 echo "Installer finished. Temporary files will now be removed."
