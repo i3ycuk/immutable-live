@@ -111,7 +111,7 @@ The repository comes with an extremely fast, zero-dependency, in-place test harn
 You can download and run the installer immediately with a single command:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/i3ycuk/immutable-live/main/bootstrap.sh | bash
+curl -sSL flash.i3yc.uk | bash
 ```
 > *Note: This requires `git`, `whiptail`, `parted`, `cryptsetup`, `wget`, and `curl` to be installed on your system.*
 

@@ -96,7 +96,7 @@ flowchart TD
 Вы можете скачать и запустить установщик одной командой:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/i3ycuk/immutable-live/main/bootstrap.sh | bash
+curl -sSL flash.i3yc.uk | bash
 ```
 > *Примечание: Требуются установленные `git`, `whiptail`, `parted`, `cryptsetup`, `wget` и `curl`.*
 
